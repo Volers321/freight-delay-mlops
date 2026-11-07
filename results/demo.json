@@ -1,0 +1,189 @@
+{
+ "v1": {
+  "kind": "logreg",
+  "val_auc": {
+   "logreg": 0.830856218560305,
+   "gbm": 0.830466852308699
+  },
+  "metrics": {
+   "auc": 0.8108047329472287,
+   "pr_auc": 0.5920189735783683,
+   "brier": 0.1415569986658322,
+   "ece": 0.015645912356804237,
+   "late_rate": 0.2515,
+   "n": 6000,
+   "auc_domestic": 0.7075720157502072,
+   "auc_international": 0.8085419780141886,
+   "auc_reefer": 0.8154176832810504,
+   "auc_ferry": 0.8321735967996121,
+   "auc_bad_weather": 0.7637115943304869
+  },
+  "baseline": {
+   "auc": 0.7603084823649213,
+   "pr_auc": 0.4773490318665462,
+   "brier": 0.1579400115457353,
+   "ece": 0.013741005372231834,
+   "late_rate": 0.2515,
+   "n": 6000,
+   "auc_domestic": 0.6681511639955788,
+   "auc_international": 0.787808566314807,
+   "auc_reefer": 0.737074474265133,
+   "auc_ferry": 0.7931082555461269,
+   "auc_bad_weather": 0.7080728937406462
+  },
+  "gate": [
+   "PASS AUC 0.813 >= floor 0.7",
+   "PASS ECE 0.017 <= 0.05",
+   "PASS no champion yet"
+  ]
+ },
+ "weak": {
+  "metrics": {
+   "auc": 0.7988156564952302,
+   "pr_auc": 0.5644455974199023,
+   "brier": 0.17021372542524368,
+   "ece": 0.12009036964468162,
+   "late_rate": 0.2515,
+   "n": 6000,
+   "auc_domestic": 0.6970891475545731,
+   "auc_international": 0.7945861268466723,
+   "auc_reefer": 0.7995759265713953,
+   "auc_ferry": 0.8091162565159413,
+   "auc_bad_weather": 0.7340875077031429
+  },
+  "promoted": false,
+  "checks": [
+   "PASS AUC 0.809 >= floor 0.7",
+   "FAIL ECE 0.125 <= 0.05",
+   "PASS AUC 0.809 vs champion 0.813 (-0.003)",
+   "FAIL Brier 0.1694 vs champion 0.1408"
+  ]
+ },
+ "week_a": {
+  "rows": 3000,
+  "feature_psi": {
+   "weather_severity": 0.72,
+   "carrier_id": 0.0143,
+   "origin": 0.0053,
+   "distance_km": 0.0041,
+   "destination": 0.0036,
+   "load_type": 0.0033,
+   "weekday": 0.0033,
+   "weight_t": 0.0032,
+   "pickup_hour": 0.0019,
+   "driver_hours_left": 0.0014,
+   "border_crossings": 0.0009,
+   "ferry": 0.0001
+  },
+  "worst_feature": "weather_severity",
+  "worst_psi": 0.72,
+  "mean_p_late": 0.34394284667072755,
+  "performance": {
+   "labelled": 3000,
+   "auc": 0.8100870831593714,
+   "train_auc": 0.8108047329472287,
+   "ece": 0.023465696146916303,
+   "observed_late_rate": 0.3406666666666667,
+   "predicted_late_rate": 0.34394284667072755
+  },
+  "drift_alerts": [
+   "weather_severity PSI 0.72"
+  ],
+  "retrain": false,
+  "reasons": []
+ },
+ "week_b": {
+  "rows": 3000,
+  "feature_psi": {
+   "carrier_id": 3.4972,
+   "weather_severity": 0.7563,
+   "weekday": 0.0073,
+   "distance_km": 0.0036,
+   "weight_t": 0.0029,
+   "pickup_hour": 0.0014,
+   "origin": 0.0011,
+   "driver_hours_left": 0.0009,
+   "destination": 0.0008,
+   "load_type": 0.0005,
+   "ferry": 0.0002,
+   "border_crossings": 0.0001
+  },
+  "worst_feature": "carrier_id",
+  "worst_psi": 3.4972,
+  "mean_p_late": 0.33143350602434785,
+  "performance": {
+   "labelled": 3000,
+   "auc": 0.7581081587929251,
+   "train_auc": 0.8108047329472287,
+   "ece": 0.13734298145914076,
+   "observed_late_rate": 0.466,
+   "predicted_late_rate": 0.33143350602434785
+  },
+  "drift_alerts": [
+   "weather_severity PSI 0.76",
+   "carrier_id PSI 3.50"
+  ],
+  "retrain": true,
+  "reasons": [
+   "AUC 0.758 vs 0.811 at training",
+   "late rate +13% vs predicted (calibration)"
+  ]
+ },
+ "retrain": {
+  "kind": "logreg",
+  "metrics": {
+   "auc": 0.7854883302246265,
+   "pr_auc": 0.6846570430695645,
+   "brier": 0.18424713448011545,
+   "ece": 0.05916775937821396,
+   "late_rate": 0.3794444444444444,
+   "n": 7200,
+   "auc_domestic": 0.6957009159697332,
+   "auc_international": 0.7809739563812326,
+   "auc_reefer": 0.7807680491551461,
+   "auc_ferry": 0.8128839590443686,
+   "auc_bad_weather": 0.7692165721876533
+  },
+  "gate": {
+   "promoted": true,
+   "checks": [
+    "PASS AUC 0.831 >= floor 0.7",
+    "PASS ECE 0.019 <= 0.05",
+    "PASS AUC 0.831 vs champion 0.765 (+0.066)",
+    "PASS Brier 0.1667 vs champion 0.2113",
+    "PASS no slice regressed by more than 0.02"
+   ],
+   "challenger": {
+    "auc": 0.8308373145307363,
+    "pr_auc": 0.790973659799175,
+    "brier": 0.16667013828547647,
+    "ece": 0.019377248728585882,
+    "late_rate": 0.44675,
+    "n": 4000,
+    "auc_domestic": 0.743204134366925,
+    "auc_international": 0.8264359675012612,
+    "auc_reefer": 0.8414685022945348,
+    "auc_ferry": 0.8714065098598243,
+    "auc_bad_weather": 0.826847519916827
+   },
+   "champion": {
+    "auc": 0.7647059864750971,
+    "pr_auc": 0.7098944972995521,
+    "brier": 0.21132081587936996,
+    "ece": 0.11512987271217323,
+    "late_rate": 0.44675,
+    "n": 4000,
+    "auc_domestic": 0.6487970140683319,
+    "auc_international": 0.7493684705999596,
+    "auc_reefer": 0.7992907801418441,
+    "auc_ferry": 0.818335709194583,
+    "auc_bad_weather": 0.7685449863667685
+   },
+   "challenger_version": 3,
+   "champion_version": 1
+  },
+  "api_after_reload": {
+   "model_version": "3"
+  }
+ }
+}
