@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      MLFLOW_DISABLE_AGENT_HINT: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest -q
+
+  lifecycle:
+    # train -> gate -> serve -> drift -> retrain, end to end, on every push
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      MLFLOW_DISABLE_AGENT_HINT: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - run: fdm demo --out results/demo.json
+      - name: The retrained model must have been promoted
+        run: python -c "import json,sys; sys.exit(0 if json.load(open('results/demo.json'))['retrain']['gate']['promoted'] else 1)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-results
+          path: results/demo.json
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t fdm .
+      - name: Image starts and answers /health
+        run: |
+          docker run -d --name fdm -e FDM_SKIP_LOAD=1 -p 8000:8000 fdm
+          for i in $(seq 1 20); do curl -fsS localhost:8000/health && exit 0; sleep 1; done
+          docker logs fdm; exit 1

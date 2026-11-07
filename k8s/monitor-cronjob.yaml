@@ -1,0 +1,27 @@
+# Nightly drift and performance check. Exit code 3 means "retrain recommended";
+# the job is then marked failed, which an alert rule (or Argo Workflows) can act on.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: fdm-monitor
+spec:
+  schedule: "17 2 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext: {runAsNonRoot: true, runAsUser: 10001}
+          containers:
+            - name: monitor
+              image: ghcr.io/volers321/freight-delay-mlops:latest
+              envFrom: [{configMapRef: {name: fdm-config}}]
+              command: ["fdm", "monitor", "/data/predictions.jsonl", "--outcomes", "/data/outcomes.csv"]
+              resources:
+                requests: {cpu: 250m, memory: 512Mi}
+              volumeMounts: [{name: predictions, mountPath: /data}]
+          volumes:
+            - name: predictions
+              persistentVolumeClaim: {claimName: fdm-predictions}

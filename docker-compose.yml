@@ -1,0 +1,41 @@
+# docker compose up -d mlflow
+# docker compose run --rm trainer          # generate data, train, gate -> @champion
+# docker compose up -d api                 # http://localhost:8000/docs
+# docker compose run --rm monitor          # drift report from the prediction log
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.18.0
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts --serve-artifacts
+    ports: ["5000:5000"]
+    volumes: [mlflow:/mlflow]
+
+  trainer:
+    build: .
+    profiles: [jobs]
+    depends_on: [mlflow]
+    volumes: [data:/data]
+    command: >
+      sh -c "fdm generate /data/history.csv --n 30000 &&
+             fdm train /data/history.csv &&
+             fdm generate /data/golden.csv --n 4000 --seed 7 --start 2026-07-15 &&
+             fdm gate /data/golden.csv"
+
+  api:
+    build: .
+    depends_on: [mlflow]
+    ports: ["8000:8000"]
+    volumes: [data:/data]
+
+  monitor:
+    build: .
+    profiles: [jobs]
+    depends_on: [mlflow]
+    volumes: [data:/data]
+    command: fdm monitor /data/predictions.jsonl
+
+volumes:
+  mlflow:
+  data:
