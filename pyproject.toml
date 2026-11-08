@@ -18,10 +18,11 @@ dependencies = [
     "fastapi>=0.110",
     "uvicorn>=0.29",
     "pydantic>=2.6",
+    "httpx>=0.27",  # fdm demo drives the API in-process through FastAPI's TestClient
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "ruff>=0.6", "httpx>=0.27"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]
 fdm = "fdm.cli:main"
